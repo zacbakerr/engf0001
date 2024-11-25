@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subsystem Control</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        label, input, button { margin: 10px 0; }
+        .controls { display: flex; flex-direction: column; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Subsystem Control</h1>
+    <div class="controls">
+        <label for="ph">pH:</label>
+        <input type="number" id="ph" step="0.1" value="{{ ph }}" />
+
+        <label for="temperature">Temperature (°C):</label>
+        <input type="number" id="temperature" step="0.1" value="{{ temp }}" />
+
+        <label for="stirring_speed">Stirring Speed (RPM):</label>
+        <input type="number" id="stirring_speed" step="1" value="{{ stirring_speed }}" />
+
+        <button onclick="updateValues()">Update</button>
+    </div>
+
+    <script>
+        function updateValues() {
+            const ph = document.getElementById('ph').value;
+            const temperature = document.getElementById('temperature').value;
+            const stirringSpeed = document.getElementById('stirring_speed').value;
+
+            const data = new FormData();
+            data.append('ph', ph);
+            data.append('temperature', temperature);
+            data.append('stirring_speed', stirringSpeed);
+
+            fetch('/update', {
+                method: 'POST',
+                body: data
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Values updated successfully!');
+                } else {
+                    alert('Failed to update values.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
