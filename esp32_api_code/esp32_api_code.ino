@@ -11,6 +11,10 @@
 
 const char* pass = WIFI_PASS;
 
+#define SLAVE_ADDR 9
+#define I2C_SDA 21
+#define I2C_SCL 22
+
 const char* host = "glacial-lowlands-87276-2b36fa9f34ee.herokuapp.com";
 const int httpPort = 80;  // Use port 80 for HTTP
 
@@ -147,7 +151,8 @@ void postData(float ph, float temperature, float stirring_speed) {
 }
 
 void setup() {
-  Serial.begin(115200);
+  Wire.begin (I2C_SDA, I2C_SCL);
+  Serial.begin(9600);
 
   wifi_connect();
 }
@@ -158,5 +163,12 @@ void loop() {
   float sample_ph = 9.0;
   fetch_api_data();
   delay(10000);  
+  Wire.requestFrom(SLAVE_ADDR, 20); // request 6 bytes from slave
+  // device SLAVE_ADDR
+  String received_string = "";
+  while (Wire.available()) { // slave may send less than requested
+  char c = Wire.read(); // receive a byte as character
+  received_string += c;
+  }
   postData(sample_ph, sample_temp, sample_speed);
 }
