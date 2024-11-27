@@ -17,15 +17,22 @@ SUPABASE_URL = 'https://yooxrfmtfsmlsbkvefte.supabase.co'
 SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlvb3hyZm10ZnNtbHNia3ZlZnRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1NTM2MzgsImV4cCI6MjA0ODEyOTYzOH0.auzzcOuIFDvRiJQo01WWNTHTAOerGJrUkR5KF_KRlOA'
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Current values (initial values, you can replace with actual subsystem)
-current_ph = 7.0
-current_temp = 25.0
-current_stirring_speed = 10.0
-
 # Route to display the UI
 @app.route('/')
 def index():
-    return render_template('index.html', ph=current_ph, temp=current_temp, stirring_speed=current_stirring_speed)
+    response = supabase.table('subsystem_logs').select('*').order('timestamp', desc=True).limit(1).execute()
+    
+    if response.data:
+        latest_entry = response.data[0]
+        return render_template('index.html', 
+                               ph=latest_entry['ph'], 
+                               temp=latest_entry['temperature'], 
+                               stirring_speed=latest_entry['stirring_speed'])
+    else:
+        return render_template('index.html', 
+                               ph=999, 
+                               temp=999, 
+                               stirring_speed=999)
 
 # Route to handle updates from the UI
 @app.route('/update', methods=['POST'])
@@ -55,11 +62,17 @@ def update():
 # Route to get current values
 @app.route('/current', methods=['GET'])
 def get_current_values():
-    return jsonify({
-        'ph': current_ph,
-        'temperature': current_temp,
-        'stirring_speed': current_stirring_speed
-    })
+    response = supabase.table('subsystem_logs').select('*').order('timestamp', desc=True).limit(1).execute()
+    
+    if response.data:
+        latest_entry = response.data[0]
+        return jsonify({
+            'ph': latest_entry['ph'],
+            'temperature': latest_entry['temperature'],
+            'stirring_speed': latest_entry['stirring_speed']
+        })
+    else:
+        return jsonify({'error': 'No data found'}), 404
 
 if __name__ == '__main__':
     app.run()
