@@ -2,17 +2,19 @@ from flask import Flask, render_template, request, jsonify
 from supabase import create_client, Client
 import os
 from datetime import datetime, timezone
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+# load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Supabase client setup
-SUPABASE_URL = os.getenv('https://yooxrfmtfsmlsbkvefte.supabase.co')
-SUPABASE_KEY = os.getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlvb3hyZm10ZnNtbHNia3ZlZnRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1NTM2MzgsImV4cCI6MjA0ODEyOTYzOH0.auzzcOuIFDvRiJQo01WWNTHTAOerGJrUkR5KF_KRlOA')
+# SUPABASE_URL = os.getenv('SUPABASE_URL')
+# SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+SUPABASE_URL = 'https://yooxrfmtfsmlsbkvefte.supabase.co'
+SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlvb3hyZm10ZnNtbHNia3ZlZnRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1NTM2MzgsImV4cCI6MjA0ODEyOTYzOH0.auzzcOuIFDvRiJQo01WWNTHTAOerGJrUkR5KF_KRlOA'
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Current values (initial values, you can replace with actual subsystem)
@@ -59,6 +61,5 @@ def get_current_values():
         'stirring_speed': current_stirring_speed
     })
 
-# Run the app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
